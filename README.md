@@ -62,4 +62,4 @@ weather-dashboard/
 ```
 
 ---
-Được phát triển bởi MNT.
+Được phát triển bởi Phạm Sơn.

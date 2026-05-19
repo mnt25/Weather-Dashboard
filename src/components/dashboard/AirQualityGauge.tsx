@@ -1,5 +1,6 @@
 import React from "react";
 import { getAirQualityInfo } from "../../utils/weatherUtils.tsx";
+import { ShieldAlert } from "lucide-react";
 
 interface AirQualityGaugeProps {
   aqi: number;
@@ -17,19 +18,17 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
   const percentage = normalizedAQI / maxAQI;
   const strokeDashoffset = circumference * (1 - percentage);
 
-  // Bộ tách cho thước đo
-  const separators = [36, 72, 108, 144].map((angle) => {
-    const radian = (angle * Math.PI) / 180;
-    const x1 = 100 + 72 * Math.cos(radian);
-    const y1 = 100 - 72 * Math.sin(radian);
-    const x2 = 100 + 98 * Math.cos(radian);
-    const y2 = 100 - 98 * Math.sin(radian);
-    return { x1, y1, x2, y2 };
-  });
-
   return (
-    <div className="glass-card p-4 h-100 d-flex flex-column align-items-center shadow-lg hover-scale">
-      <h3 className="text-secondary-custom fs-6 fw-semibold text-uppercase tracking-wider mb-4">
+    <div 
+      className="glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-between hover-scale"
+      style={{
+        boxShadow: `var(--glass-shadow), 0 8px 30px ${colorClass}12`,
+        borderColor: `${colorClass}35`,
+        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
+      }}
+    >
+      <h3 className="text-secondary-custom fs-6 fw-semibold text-uppercase tracking-wider mb-3 d-flex align-items-center gap-2">
+        <ShieldAlert size={16} style={{ color: colorClass }} />
         Chất lượng không khí
       </h3>
 
@@ -39,21 +38,6 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
       >
         <svg className="w-100 h-100 overflow-visible" viewBox="0 0 200 110">
           <defs>
-            <mask id="gauge-mask">
-              <rect x="0" y="0" width="200" height="200" fill="white" />
-              {separators.map((line, idx) => (
-                <line
-                  key={idx}
-                  x1={line.x1}
-                  y1={line.y1}
-                  x2={line.x2}
-                  y2={line.y2}
-                  stroke="black"
-                  strokeWidth="3"
-                />
-              ))}
-            </mask>
-
             <linearGradient id="aqiSmoothGradient" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#4ade80" />
               <stop offset="30%" stopColor="#facc15" />
@@ -63,17 +47,17 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
             </linearGradient>
           </defs>
 
-          <g mask="url(#gauge-mask)">
-            {/* Đường dẫn nền */}
+          <g>
+            {/* Background path */}
             <path
               d="M 20 100 A 80 80 0 0 1 180 100"
               fill="none"
-              stroke="rgba(0,0,0,0.1)"
+              stroke="rgba(0,0,0,0.06)"
               strokeWidth={strokeWidth}
               strokeLinecap="round"
             />
 
-            {/* Tiến độ giá trị */}
+            {/* Gauge progress */}
             <path
               d="M 20 100 A 80 80 0 0 1 180 100"
               fill="none"
@@ -84,7 +68,7 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
               strokeDashoffset={strokeDashoffset}
               style={{
                 transition:
-                  "stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "stroke-dashoffset 1.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
               }}
             />
           </g>
@@ -92,21 +76,24 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
 
         <div className="position-absolute bottom-0 d-flex flex-column align-items-center text-center translate-y-2">
           <span
-            className="fw-thin display-4 fw-bold"
+            className="fw-bold"
             style={{
-              fontSize: "2rem",
+              fontSize: "2.2rem",
               lineHeight: 0.8,
               letterSpacing: "-0.05em",
+              color: "var(--text-primary)"
             }}
           >
             {aqi}
           </span>
           <span
-            className="fw-bold text-uppercase mt-2 px-3 py-1 rounded-pill"
+            className="fw-bold text-uppercase mt-2 px-3 py-1 rounded-pill shadow-xs"
             style={{
               fontSize: "0.7rem",
-              backgroundColor: `${colorClass}33`,
+              backgroundColor: `${colorClass}20`,
               color: colorClass,
+              border: `1px solid ${colorClass}40`,
+              letterSpacing: "0.05em"
             }}
           >
             {status}
@@ -114,7 +101,7 @@ export const AirQualityGauge: React.FC<AirQualityGaugeProps> = ({ aqi }) => {
         </div>
       </div>
 
-      <p className="text-secondary-custom small text-center mt-3 mb-0 fw-light">
+      <p className="text-secondary-custom small text-center mt-3 mb-0 fw-medium opacity-90 px-2">
         {description}
       </p>
     </div>

@@ -5,4 +5,6 @@ export interface CurrentWeatherProps {
   city: string;
   country?: string;
   comparison: string;
+  tempMin?: number;
+  tempMax?: number;
 }

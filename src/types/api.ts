@@ -6,6 +6,7 @@ export interface CityResult {
   latitude: number;
   longitude: number;
   admin1?: string; 
+  countryCode?: string;
 }
 
 export interface WeatherResponse {

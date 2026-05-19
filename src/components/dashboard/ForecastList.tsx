@@ -17,29 +17,29 @@ export const ForecastList: React.FC<ForecastListProps> = ({
   const range = weeklyMax - weeklyMin || 1;
 
   return (
-    <div className="glass-card p-4 mt-4 shadow-lg w-100">
+    <div className="glass-card p-4 shadow-lg w-100">
       <h3 className="text-secondary-custom fs-6 fw-semibold tracking-wider mb-4 ps-1 d-flex align-items-center gap-2">
-        <Calendar size={18} />
-        Dự báo {city} 7 ngày
+        <Calendar size={18} className="text-secondary-custom" style={{ color: "var(--accent-color)" }} />
+        Dự báo 7 ngày tới tại {city}
       </h3>
 
       {/* Header */}
       <div
-        className="row text-secondary-custom small fw-bold mb-3 px-2 opacity-75 border-bottom pb-2 text-uppercase"
+        className="row text-secondary-custom small fw-bold mb-3 px-3 opacity-75 border-bottom pb-2 text-uppercase forecast-header"
         style={{
           fontSize: "0.75rem",
           letterSpacing: "0.05em",
-          borderColor: "rgba(0,0,0,0.05)",
+          borderColor: "var(--glass-border)",
         }}
       >
-        <div className="col-3 col-sm-2">Ngày</div>
-        <div className="col-3 col-sm-3 ps-sm-4">Thời tiết</div>
-        <div className="col-1 text-end opacity-75">Thấp</div>
-        <div className="col-4 col-sm-5 text-center">Nhiệt độ</div>
-        <div className="col-1 text-start opacity-75">Cao</div>
+        <div className="col-3 col-sm-2 text-start">Ngày</div>
+        <div className="col-3 col-sm-3 ps-sm-4 text-center text-sm-start">Thời tiết</div>
+        <div className="col-2 col-sm-1 text-end opacity-75">Thấp</div>
+        <div className="col-2 col-sm-5 text-center">Nhiệt độ tuần</div>
+        <div className="col-2 col-sm-1 text-start opacity-75">Cao</div>
       </div>
 
-      <div className="d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-2">
         {forecast.map((day, index) => {
           const leftPercent = ((day.tempMin - weeklyMin) / range) * 100;
           const widthPercent = ((day.tempMax - day.tempMin) / range) * 100;
@@ -47,35 +47,26 @@ export const ForecastList: React.FC<ForecastListProps> = ({
           return (
             <div
               key={index}
-              className="row align-items-center g-0 py-3 border-bottom border-white-10 hover-scale"
+              className="row align-items-center g-0 py-3 px-3 glass-card-item hover-scale mx-0 forecast-row"
               style={{
-                borderBottomColor:
-                  index === forecast.length - 1
-                    ? "transparent"
-                    : "rgba(0,0,0,0.05)",
-                transition: "transform 0.2s, background 0.2s",
+                borderColor: "var(--card-item-border)",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.03)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
             >
-              {/* Tên ngày */}
+              {/* Day Name */}
               <div className="col-3 col-sm-2 text-start">
                 <span
-                  className={`fw-medium ${
+                  className={`fw-semibold ${
                     day.day === "Hôm nay"
-                      ? "text-primary fw-bold"
+                      ? "text-gradient fw-bold"
                       : "text-secondary-custom"
                   }`}
+                  style={{ fontSize: "0.9rem" }}
                 >
                   {day.day}
                 </span>
               </div>
 
-              {/* Biểu tượng thời tiết & Xác suất mưa */}
+              {/* Weather Icon & Rain Probability */}
               <div className="col-3 col-sm-3 d-flex flex-column flex-sm-row align-items-center justify-content-center justify-content-sm-start gap-1 gap-sm-3 ps-sm-4">
                 <div
                   className="d-flex align-items-center justify-content-center"
@@ -83,31 +74,37 @@ export const ForecastList: React.FC<ForecastListProps> = ({
                 >
                   {getWeatherIcon(day.condition, 24)}
                 </div>
-                <div className="d-flex align-items-center gap-1 bg-info bg-opacity-10 px-2 py-1 rounded-pill">
-                  <Droplets size={10} className="text-info" />
+                <div 
+                  className="d-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs"
+                  style={{ 
+                    backgroundColor: "rgba(59, 130, 246, 0.12)", 
+                    border: "1px solid rgba(59, 130, 246, 0.25)" 
+                  }}
+                >
+                  <Droplets size={10} className="text-primary" style={{ color: "var(--accent-color)" }} />
                   <span
-                    className="text-info fw-bold small"
-                    style={{ fontSize: "0.75rem" }}
+                    className="fw-bold small"
+                    style={{ fontSize: "0.7rem", color: "var(--accent-color)" }}
                   >
                     {day.precipitationProb}%
                   </span>
                 </div>
               </div>
 
-              {/* Nhiệt độ tối thiểu */}
+              {/* Min Temp */}
               <div className="col-2 col-sm-1 text-end pe-2 d-flex align-items-center justify-content-end gap-1">
                 <Moon size={14} className="text-secondary-custom opacity-75" />
-                <span className="text-info text-opacity-75 fw-medium small">
+                <span className="text-primary fw-semibold small" style={{ fontSize: "0.85rem" }}>
                   {Math.round(day.tempMin)}°
                 </span>
               </div>
 
-              {/* Thanh nhiệt độ */}
-              <div className="col-3 col-sm-5 px-2">
+              {/* Temp Bar */}
+              <div className="col-2 col-sm-5 px-2">
                 {/* Track */}
                 <div
-                  className="position-relative rounded-pill overflow-hidden"
-                  style={{ height: "6px", backgroundColor: "rgba(0,0,0,0.05)" }}
+                  className="position-relative rounded-pill overflow-hidden w-100"
+                  style={{ height: "6px", backgroundColor: "rgba(0,0,0,0.06)" }}
                 >
                   {/* Active Bar */}
                   <div
@@ -118,15 +115,15 @@ export const ForecastList: React.FC<ForecastListProps> = ({
                       minWidth: "6px",
                       background:
                         "linear-gradient(90deg, #60a5fa 0%, #fbbf24 100%)",
-                      opacity: 1,
+                      opacity: 0.9,
                     }}
                   ></div>
                 </div>
               </div>
 
-              {/* Nhiệt độ tối đa */}
+              {/* Max Temp */}
               <div className="col-2 col-sm-1 text-start ps-2 d-flex align-items-center justify-content-start gap-1">
-                <span className="text-dark fw-bold small">
+                <span className="fw-bold small" style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                   {Math.round(day.tempMax)}°
                 </span>
                 <Sun size={14} className="text-warning" />

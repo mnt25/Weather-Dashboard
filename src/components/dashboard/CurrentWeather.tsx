@@ -1,11 +1,14 @@
 import React from "react";
-
 import {
   Wind,
   Droplets,
   TrendingUp,
   Gauge,
   Sun as SunIcon,
+  Calendar,
+  MapPin,
+  ArrowDown,
+  ArrowUp
 } from "lucide-react";
 import type { CurrentWeatherProps } from "../../types/currentweather";
 import { getWeatherIcon } from "../../utils/weatherUtils.tsx";
@@ -15,43 +18,45 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
   city,
   country,
   comparison,
+  tempMin,
+  tempMax
 }) => {
   return (
     <div className="glass-card p-4 p-md-5 animate-fade-in w-100 position-relative overflow-hidden">
-      {/* Hiệu ứng ánh sáng tinh tế phía sau nhiệt độ chính */}
+      {/* Delicate background ambient circle */}
       <div
         className="position-absolute top-50 start-25 translate-middle rounded-circle"
         style={{
           width: "300px",
           height: "300px",
           background:
-            "radial-gradient(circle, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 70%)",
+            "radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 70%)",
           pointerEvents: "none",
         }}
       ></div>
 
-      <div className="row align-items-center g-5 position-relative z-1">
+      <div className="row align-items-center g-4 g-lg-5 position-relative z-1">
         {/* Main Info (Left) */}
-        <div className="col-lg-6 text-center text-lg-start">
-          <div className="d-flex flex-column mb-1">
-            <h2 className="display-6 fw-bold m-0 d-flex align-items-center justify-content-center justify-content-lg-start gap-2">
-              <span className="text-info opacity-75">
-                <MapPinIcon />
+        <div className="col-lg-6 text-center text-lg-start current-weather-info">
+          <div className="d-flex flex-column mb-1 align-items-center align-items-lg-start">
+            <h2 className="display-6 fw-bold m-0 d-flex align-items-center gap-2">
+              <span className="opacity-75" style={{ color: "var(--accent-color)" }}>
+                <MapPin size={22} />
               </span>
               {city}
             </h2>
             {country && (
-              <span className="text-secondary-custom fs-5 fw-light">
+              <span className="text-secondary-custom fs-5 fw-light mt-1">
                 {country}
               </span>
             )}
             <Clock utcOffsetSeconds={data.utcOffsetSeconds} initialLocalTime={data.localTime} />
           </div>
 
-          <div className="d-flex align-items-center justify-content-center justify-content-lg-start gap-4 my-2">
+          <div className="d-flex align-items-center justify-content-center justify-content-lg-start gap-4 my-3">
             <span
-              className="fw-thin tracking-tighter display-1 text-gradient-gold"
-              style={{ fontSize: "7.5rem", lineHeight: 0.9 }}
+              className="fw-thin tracking-tighter display-1 text-gradient"
+              style={{ lineHeight: 0.9 }}
             >
               {Math.round(data.temp)}°
             </span>
@@ -63,13 +68,30 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
             </div>
           </div>
 
+          {/* Today's Low / High Temperatures */}
+          {(tempMin !== undefined && tempMax !== undefined) && (
+            <div className="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 mt-1 mb-3 text-secondary-custom">
+              <div className="d-flex align-items-center gap-1">
+                <ArrowDown size={16} className="text-info" />
+                <span>Thấp nhất:</span>
+                <strong className="text-primary">{Math.round(tempMin)}°C</strong>
+              </div>
+              <span className="opacity-40">|</span>
+              <div className="d-flex align-items-center gap-1">
+                <ArrowUp size={16} className="text-danger" />
+                <span>Cao nhất:</span>
+                <strong className="text-danger">{Math.round(tempMax)}°C</strong>
+              </div>
+            </div>
+          )}
+
           {comparison && (
             <div
-              className="mt-4 d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill bg-white border shadow-sm"
-              style={{ borderColor: "rgba(0,0,0,0.05)" }}
+              className="mt-3 d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill bg-white bg-opacity-20 border shadow-sm"
+              style={{ borderColor: "var(--glass-border)" }}
             >
-              <TrendingUp size={18} className="text-warning" />
-              <small className="fw-medium text-secondary-custom">
+              <TrendingUp size={16} className="text-warning" />
+              <small className="fw-semibold text-secondary-custom">
                 {comparison}
               </small>
             </div>
@@ -77,57 +99,47 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
         </div>
 
         {/* Details Grid (Right) */}
-        <div className="col-lg-6">
+        <div className="col-lg-6 col-12 weather-details-grid">
           <div className="row g-3">
             {[
               {
                 label: "Độ ẩm",
                 value: `${data.humidity}%`,
                 icon: Droplets,
-                color: "#60a5fa",
+                color: "#3b82f6", // Blue
               },
               {
-                label: "Gió",
+                label: "Tốc độ gió",
                 value: `${data.windSpeed} km/h`,
                 icon: Wind,
-                color: "#86efac",
+                color: "#10b981", // Green
               },
               {
                 label: "Áp suất",
                 value: `${Math.round(data.pressure)} hPa`,
                 icon: Gauge,
-                color: "#c4b5fd",
+                color: "#8b5cf6", // Purple
               },
               {
-                label: "UV Index",
+                label: "Chỉ số UV",
                 value: data.uvIndex,
                 icon: SunIcon,
-                color: "#fdba74",
+                color: "#f59e0b", // Amber
               },
             ].map((item, idx) => (
               <div key={idx} className="col-6">
-                <div
-                  className="p-3 h-100 rounded-4 bg-white border d-flex align-items-center gap-3 hover-scale"
-                  style={{
-                    transition: "background 0.2s, transform 0.2s",
-                    borderColor: "rgba(0,0,0,0.05)",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.02)")
-                  }
-                  onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor =
-                    "rgba(255,255,255,1)")
-                  }
-                >
-                  <div className="p-2 rounded-circle bg-light d-flex justify-content-center align-items-center shadow-sm">
-                    <item.icon size={24} style={{ color: item.color }} />
+                <div className="p-3 h-100 glass-card-item d-flex align-items-center gap-3">
+                  <div 
+                    className="p-2 rounded-circle d-flex justify-content-center align-items-center shadow-sm"
+                    style={{ background: "rgba(255,255,255,0.4)", border: "1px solid var(--glass-border)" }}
+                  >
+                    <item.icon size={22} style={{ color: item.color }} />
                   </div>
-                  <div className="d-flex flex-column">
-                    <span className="small text-secondary-custom fw-medium">
+                  <div className="d-flex flex-column text-start">
+                    <span className="small text-secondary-custom fw-semibold" style={{ fontSize: "0.75rem" }}>
                       {item.label}
                     </span>
-                    <span className="fs-5 fw-semibold text-dark">
+                    <span className="fs-5 fw-bold" style={{ color: "var(--text-primary)" }}>
                       {item.value}
                     </span>
                   </div>
@@ -141,9 +153,6 @@ export const CurrentWeather: React.FC<CurrentWeatherProps> = ({
   );
 };
 
-
-
-
 const Clock: React.FC<{ utcOffsetSeconds: number; initialLocalTime: string }> = ({ utcOffsetSeconds, initialLocalTime }) => {
   const [timeStr, setTimeStr] = React.useState(initialLocalTime);
 
@@ -155,11 +164,12 @@ const Clock: React.FC<{ utcOffsetSeconds: number; initialLocalTime: string }> = 
 
       const hours = String(cityDateObj.getUTCHours()).padStart(2, '0');
       const minutes = String(cityDateObj.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(cityDateObj.getUTCSeconds()).padStart(2, '0');
 
-      const simpleTime = `${hours}:${minutes}`;
+      const simpleTime = `${hours}:${minutes}:${seconds}`;
 
       const dayIndex = cityDateObj.getUTCDay();
-      const days = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+      const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
       const currentDayName = days[dayIndex];
       const datePart = `${String(cityDateObj.getUTCDate()).padStart(2, '0')}/${String(cityDateObj.getUTCMonth() + 1).padStart(2, '0')}/${String(cityDateObj.getUTCFullYear()).padStart(2, '0')}`;
 
@@ -172,25 +182,16 @@ const Clock: React.FC<{ utcOffsetSeconds: number; initialLocalTime: string }> = 
   }, [utcOffsetSeconds]);
 
   return (
-    <div className="d-flex align-items-center gap-2 mt-2 text-secondary-custom opacity-75 small bg-secondary bg-opacity-10 px-3 py-1 rounded-pill fit-content">
-      <span className="fw-bold" style={{ color: "#0D6EFD" }}>{timeStr}</span>
+    <div 
+      className="d-flex align-items-center gap-2 mt-2 text-secondary-custom small px-3 py-2 rounded-pill fit-content shadow-sm border"
+      style={{ 
+        background: "rgba(255, 255, 255, 0.25)", 
+        borderColor: "var(--glass-border)",
+        backdropFilter: "blur(5px)"
+      }}
+    >
+      <Calendar size={14} className="text-secondary-custom opacity-75" />
+      <span className="fw-semibold text-gradient">{timeStr}</span>
     </div>
   );
 };
-
-const MapPinIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
